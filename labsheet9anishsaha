@@ -1,0 +1,158 @@
+#1
+class Heap:
+    def __init__(self, is_min=True):
+        self.heap = []
+        self.is_min = is_min
+
+    def better(self, a, b):
+        if self.is_min:
+            return a < b
+        return a > b
+
+    def insert(self, value):
+        self.heap.append(value)
+        i = len(self.heap) - 1
+
+        # Bubble up
+        while i > 0:
+            parent = (i - 1) // 2
+            if self.better(self.heap[i], self.heap[parent]):
+                self.heap[i], self.heap[parent] = (
+                    self.heap[parent], self.heap[i])
+                i = parent
+            else:
+                break
+
+    def heapify_down(self, i):
+        n = len(self.heap)
+
+        while True:
+            best = i
+            left = 2 * i + 1
+            right = 2 * i + 2
+
+            if left < n and self.better(
+                    self.heap[left], self.heap[best]):
+                best = left
+
+            if right < n and self.better(
+                    self.heap[right], self.heap[best]):
+                best = right
+
+            if best == i:
+                break
+
+            self.heap[i], self.heap[best] = (
+                self.heap[best], self.heap[i])
+            i = best
+
+    def extract_root(self):
+        if not self.heap:
+            print("Heap is empty")
+            return None
+
+        root = self.heap[0]
+        last = self.heap.pop()
+
+        if self.heap:
+            self.heap[0] = last
+            self.heapify_down(0)
+
+        return root
+
+
+values = [40, 10, 30, 50, 20]
+
+min_heap = Heap(True)
+max_heap = Heap(False)
+
+for value in values:
+    min_heap.insert(value)
+    max_heap.insert(value)
+
+print("Min Heap:", min_heap.heap)
+print("Max Heap:", max_heap.heap)
+print("Min Heap root:", min_heap.heap[0])
+print("Max Heap root:", max_heap.heap[0])
+
+#2
+def heapify(arr, n, i):
+    largest = i
+    left = 2 * i + 1
+    right = 2 * i + 2
+
+    if left < n and arr[left] > arr[largest]:
+        largest = left
+
+    if right < n and arr[right] > arr[largest]:
+        largest = right
+
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+
+
+def heap_sort(arr):
+    n = len(arr)
+
+    # Build Max Heap
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+
+    # Extract elements
+    for i in range(n - 1, 0, -1):
+        arr[0], arr[i] = arr[i], arr[0]
+        heapify(arr, i, 0)
+
+    return arr
+
+
+numbers = [40, 10, 30, 50, 20]
+print("Original Array:", numbers)
+print("Sorted Array:", heap_sort(numbers))
+
+#3
+import time
+
+def linear_search(arr, key):
+    for i in range(len(arr)):
+        if arr[i] == key:
+            return i
+    return -1
+
+def binary_search(arr, key):
+    low, high = 0, len(arr) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if arr[mid] == key:
+            return mid
+        elif arr[mid] < key:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
+
+def bubble_sort(arr):
+    arr = arr.copy()
+    for i in range(len(arr)):
+        for j in range(len(arr) - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
+
+def selection_sort(arr):
+    arr = arr.copy()
+    for i in range(len(arr)):
+        min_index = i
+        for j in range(i + 1, len(arr)):
+            if arr[j] < arr[min_index]:
+                min_index = j
+        arr[i], arr[min_index] = arr[min_index], arr[i]
+    return arr
+
+arr = [40, 10, 30, 20, 50]
+
+print("Linear Search:", linear_search(arr, 30))
+print("Binary Search:", binary_search(sorted(arr), 30))
+print("Bubble Sort:", bubble_sort(arr))
+print("Selection Sort:", selection_sort(arr))
