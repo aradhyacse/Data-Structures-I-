@@ -1,0 +1,49 @@
+#1
+arr = list(map(int, input("Enter array elements: ").split()))
+
+while True:
+    print("\n--- Basic Array Operations ---")
+    print("1. Insert an element")
+    print("2. Delete an element")
+    print("3. Search an element")
+    print("4. Display array")
+    print("5. Exit")
+
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        value = int(input("Enter value to insert: "))
+        index = int(input("Enter index: "))
+
+        if 0 <= index <= len(arr):
+            arr.insert(index, value)
+            print("Element inserted successfully.")
+        else:
+            print("Invalid index!")
+
+    elif choice == 2:
+        index = int(input("Enter index to delete: "))
+
+        if 0 <= index < len(arr):
+            deleted = arr.pop(index)
+            print("Deleted element:", deleted)
+        else:
+            print("Invalid index!")
+
+    elif choice == 3:
+        value = int(input("Enter value to search: "))
+
+        if value in arr:
+            print("Element found at index:", arr.index(value))
+        else:
+            print("Element not found.")
+
+    elif choice == 4:
+        print("Array:", arr)
+
+    elif choice == 5:
+        print("Program terminated.")
+        break
+
+    else:
+        print("Invalid choice! Try again.")
