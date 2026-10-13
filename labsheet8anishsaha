@@ -1,0 +1,272 @@
+#1
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.left = None
+        self.right = None
+
+
+def insert(root, data):
+    if root is None:
+        return Node(data)
+    if data < root.data:
+        root.left = insert(root.left, data)
+    elif data > root.data:
+        root.right = insert(root.right, data)
+    return root
+
+
+def delete(root, key):
+    if root is None:
+        return None
+
+    if key < root.data:
+        root.left = delete(root.left, key)
+    elif key > root.data:
+        root.right = delete(root.right, key)
+    else:
+        if root.left is None:
+            return root.right
+        if root.right is None:
+            return root.left
+
+        temp = root.right
+        while temp.left:
+            temp = temp.left
+
+        root.data = temp.data
+        root.right = delete(root.right, temp.data)
+
+    return root
+
+
+def inorder(root):
+    if root:
+        inorder(root.left)
+        print(root.data, end=" ")
+        inorder(root.right)
+
+
+root = None
+for value in [50, 30, 70, 20, 40, 60, 80]:
+    root = insert(root, value)
+
+print("BST Inorder:")
+inorder(root)
+
+root = delete(root, 30)
+print("\nAfter deleting 30:")
+inorder(root)
+print()
+
+#2
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+        self.height = 1
+
+
+def height(node):
+    return node.height if node else 0
+
+
+def update(node):
+    node.height = 1 + max(height(node.left), height(node.right))
+
+
+def balance(node):
+    return height(node.left) - height(node.right) if node else 0
+
+
+def right_rotate(y):
+    x = y.left
+    temp = x.right
+
+    x.right = y
+    y.left = temp
+
+    update(y)
+    update(x)
+    return x
+
+
+def left_rotate(x):
+    y = x.right
+    temp = y.left
+
+    y.left = x
+    x.right = temp
+
+    update(x)
+    update(y)
+    return y
+
+
+def insert(root, key):
+    if root is None:
+        return Node(key)
+
+    if key < root.key:
+        root.left = insert(root.left, key)
+    elif key > root.key:
+        root.right = insert(root.right, key)
+    else:
+        return root
+
+    update(root)
+    bf = balance(root)
+
+    # LL case
+    if bf > 1 and key < root.left.key:
+        return right_rotate(root)
+
+    # RR case
+    if bf < -1 and key > root.right.key:
+        return left_rotate(root)
+
+    # LR case
+    if bf > 1 and key > root.left.key:
+        root.left = left_rotate(root.left)
+        return right_rotate(root)
+
+    # RL case
+    if bf < -1 and key < root.right.key:
+        root.right = right_rotate(root.right)
+        return left_rotate(root)
+
+    return root
+
+
+def inorder(root):
+    if root:
+        inorder(root.left)
+        print(root.key, end=" ")
+        inorder(root.right)
+
+
+root = None
+for value in [10, 20, 30, 40, 50, 25]:
+    root = insert(root, value)
+
+print("AVL Inorder:")
+inorder(root)
+print("\nRoot:", root.key)
+
+#3
+class BTreeNode:
+    def __init__(self, leaf=True):
+        self.keys = []
+        self.children = []
+        self.leaf = leaf
+
+
+class BTree:
+    def __init__(self):
+        self.root = BTreeNode()
+
+    def insert(self, key):
+        root = self.root
+
+        if len(root.keys) == 2:
+            new_root = BTreeNode(False)
+            new_root.children.append(root)
+            self.split(new_root, 0)
+            self.root = new_root
+
+        self.add_nonfull(self.root, key)
+
+    def split(self, parent, index):
+        child = parent.children[index]
+        right = BTreeNode(child.leaf)
+
+        middle = child.keys[1]
+        right.keys = child.keys[2:]
+        child.keys = child.keys[:1]
+
+        if not child.leaf:
+            right.children = child.children[2:]
+            child.children = child.children[:2]
+
+        parent.keys.insert(index, middle)
+        parent.children.insert(index + 1, right)
+
+    def add_nonfull(self, node, key):
+        if node.leaf:
+            node.keys.append(key)
+            node.keys.sort()
+            return
+
+        index = 0
+        while index < len(node.keys) and key > node.keys[index]:
+            index += 1
+
+        if len(node.children[index].keys) == 2:
+            self.split(node, index)
+            if key > node.keys[index]:
+                index += 1
+
+        self.add_nonfull(node.children[index], key)
+
+    def display(self, node=None):
+        if node is None:
+            node = self.root
+
+        print(node.keys, end=" ")
+        for child in node.children:
+            self.display(child)
+
+
+tree = BTree()
+
+for value in [10, 20, 30, 40, 50]:
+    tree.insert(value)
+
+print("B-Tree nodes in traversal order:")
+tree.display()
+print()
+
+#4a
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+
+        arr[j + 1] = key
+
+    return arr
+
+
+numbers = [5, 2, 4, 1, 3]
+print("Before sorting:", numbers)
+print("After sorting:", insertion_sort(numbers))
+
+#4b
+def bucket_sort(arr):
+    if not arr:
+        return arr
+
+    bucket_count = len(arr)
+    buckets = [[] for _ in range(bucket_count)]
+
+    for value in arr:
+        index = min(int(value * bucket_count),
+                    bucket_count - 1)
+        buckets[index].append(value)
+
+    result = []
+    for bucket in buckets:
+        bucket.sort()
+        result.extend(bucket)
+
+    return result
+
+
+numbers = [0.42, 0.32, 0.23, 0.52, 0.25, 0.47]
+print("Before sorting:", numbers)
+print("After sorting:", bucket_sort(numbers))
