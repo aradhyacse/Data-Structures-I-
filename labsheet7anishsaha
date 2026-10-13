@@ -1,0 +1,57 @@
+#1
+import heapq
+
+def huffman(chars, freq):
+    heap = [[f, [[c, ""]] ] for c, f in zip(chars, freq)]
+    heapq.heapify(heap)
+
+    while len(heap) > 1:
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+
+        for pair in left[1]:
+            pair[1] = "0" + pair[1]
+
+        for pair in right[1]:
+            pair[1] = "1" + pair[1]
+
+        heapq.heappush(
+            heap,
+            [left[0] + right[0], left[1] + right[1]]
+        )
+
+    return sorted(heap[0][1])
+
+chars = ['a', 'b', 'c', 'd', 'e', 'f']
+freq = [5, 9, 12, 13, 16, 45]
+
+codes = huffman(chars, freq)
+
+print("Character : Huffman Code")
+for char, code in codes:
+    print(char, ":", code)
+
+#2
+import heapq
+
+def optimal_merge(files):
+    heapq.heapify(files)
+    total_cost = 0
+
+    while len(files) > 1:
+        first = heapq.heappop(files)
+        second = heapq.heappop(files)
+
+        merged = first + second
+        total_cost += merged
+
+        print("Merging", first, "and", second,
+              "=", merged)
+
+        heapq.heappush(files, merged)
+
+    print("Minimum Total Merge Cost:", total_cost)
+
+
+file_sizes = [20, 30, 10, 5]
+optimal_merge(file_sizes)
